@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PatikaHomework4.Service\PatikaHomework4.Service.csproj" />
+    <ProjectReference Include="..\PatikaHomework4.Data\PatikaHomework4.Data.csproj" />
+    <ProjectReference Include="..\PatikaHomework4.Dto\PatikaHomework4.Dto.csproj" />
   </ItemGroup>
 
 </Project>
