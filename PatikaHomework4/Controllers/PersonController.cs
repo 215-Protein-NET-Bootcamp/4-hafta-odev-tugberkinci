@@ -145,14 +145,7 @@ namespace PatikaHomework4.Controllers
             GenericResponse<Person> response = new GenericResponse<Person>();
             var entity = _mapper.Map<PersonDto, Person>(model);
 
-            //if (!ValidationHelper.IsValidEmail(model.Email) && !ValidationHelper.IsPhoneNumber(model.Phone))
-            //{
-            //    response.Success = false;
-            //    response.Message = "Maill adress or phone number is invalid.";
-            //    response.Data = null;
-            //    return BadRequest(response);
-            //}
-
+    
 
             var result = await Task.Run(() => _personService.Add(entity));
 
@@ -201,14 +194,7 @@ namespace PatikaHomework4.Controllers
 
             var entity = _mapper.Map<PersonDto, Person>(model);
 
-            //if (!ValidationHelper.IsValidEmail(model.Email) && !ValidationHelper.IsPhoneNumber(model.Phone))
-            //{
-            //    response.Success = false;
-            //    response.Message = "Maill adress or phone number is invalid.";
-            //    response.Data = null;
-            //    return BadRequest(response);
-            //}
-
+  
             var result = await Task.Run(() => _personService.Add(entity));
 
             if (result == null)
@@ -244,14 +230,7 @@ namespace PatikaHomework4.Controllers
             
             GenericResponse<Person> response = new GenericResponse<Person>();
             var entity = _mapper.Map<PersonDto, Person>(model);
-            //if (!ValidationHelper.IsValidEmail(model.Email) && !ValidationHelper.IsPhoneNumber(model.Phone))
-            //{
-            //    response.Success = false;
-            //    response.Message = "Maill adress or phone number is invalid.";
-            //    response.Data = null;
-            //    return BadRequest(response);
-            //}
-
+      
 
             var result = await Task.Run(() => _personService.Add(entity));
 
