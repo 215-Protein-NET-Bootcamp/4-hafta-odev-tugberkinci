@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using PatikaHomework4.Data.Model;
 using PatikaHomework4.Dto.Dto;
 using PatikaHomework4.Dto.Response;
 using PatikaHomework4.Service.IServices;
+using System.Text;
 
 namespace PatikaHomework4.Controllers
 {
@@ -13,15 +16,61 @@ namespace PatikaHomework4.Controllers
     {
         private readonly IPersonService _personService;
         private readonly IMapper _mapper;
-       
+        private readonly IDistributedCache _distributedCache;
 
 
-        public PersonController(IPersonService personService, IMapper mapper)
+
+        public PersonController(IPersonService personService, IMapper mapper,IDistributedCache distributedCache)
         {
             _personService = personService;
             _mapper = mapper;
+            _distributedCache = distributedCache;
           
 
+        }
+
+
+        /// <summary>
+        /// Get all
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">Retuns data </response>
+        [ProducesResponseType(typeof(GenericResponse<IEnumerable<Person>>), StatusCodes.Status200OK)]
+        [HttpGet("Redis/{id}")]
+        public async Task<IActionResult> GetRedis(int id)
+        {
+            string cacheKey = id.ToString();
+            GenericResponse<IEnumerable<Person>> response = new GenericResponse<IEnumerable<Person>>();
+            string json;
+
+
+            var personsFromCache = await _distributedCache.GetAsync(cacheKey);
+            if (personsFromCache != null)
+            {
+                json = Encoding.UTF8.GetString(personsFromCache);
+                var person = JsonConvert.DeserializeObject<List<Person>>(json);
+                response.Success = true;
+                response.Message = "Cache contains data.";
+                response.Data = person;
+
+                return Ok(response);
+            }
+            else
+            {
+                var person = await Task.Run(() => _personService.GetAll());
+                
+                response.Success = true;
+                response.Message = "Cache does not contains data.Cache updated.";
+                response.Data = person;
+
+                json = JsonConvert.SerializeObject(person);
+                personsFromCache = Encoding.UTF8.GetBytes(json);
+                var options = new DistributedCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromDays(1)) // belirli bir süre erişilmemiş ise expire eder
+                        .SetAbsoluteExpiration(DateTime.Now.AddMonths(1)); // belirli bir süre sonra expire eder.
+                await _distributedCache.SetAsync(cacheKey, personsFromCache, options);
+                return Ok(response);
+            }
         }
 
 
